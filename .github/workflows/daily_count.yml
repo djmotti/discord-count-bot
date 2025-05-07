@@ -1,7 +1,7 @@
 name: Daily Discord Count
 
 on:
-  workflow_dispatch:      # מאפשר לחיצה על "Run workflow"
+  workflow_dispatch:      # מאפשר לחיצה על "Run workflow" מתוך ה-UI
   push:
     branches:
       - main
