@@ -32,8 +32,8 @@ async def count_and_report():
     # מחשבים 24 שעות אחורה ב-UTC
     since = datetime.datetime.utcnow() - datetime.timedelta(days=1)
 
-    unique_visits   = 0
-    new_downloads   = 0
+    unique_visits = 0
+    new_downloads = 0
 
     async for msg in channel.history(after=since):
         txt = msg.content.lower()
@@ -43,8 +43,8 @@ async def count_and_report():
             unique_visits += 1
 
     # תאריך היום לפי שעון ישראל
-    now       = datetime.datetime.now(ZoneInfo("Asia/Jerusalem"))
-    date_str  = now.strftime("%d.%m.%y")
+    now      = datetime.datetime.now(ZoneInfo("Asia/Jerusalem"))
+    date_str = now.strftime("%d.%m.%y")
 
     # שליחת הדו"ח בשורה אחת
     await channel.send(
