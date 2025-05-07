@@ -1,16 +1,16 @@
 import os
-import re
 import datetime
 import discord
 import aiohttp
-from discord import Webhook
-from discord.webhook import AsyncWebhookAdapter
 from discord.ext import commands
 from zoneinfo import ZoneInfo
 
 # מאוכסן ב-Secrets של GitHub
 WEBHOOK_URL = os.environ['DISCORD_WEBHOOK_URL']
 BOT_TOKEN   = os.environ['DISCORD_BOT_TOKEN']
+
+# שם הערוץ שממנו נספור (תשנה לפי השם המדויק שלך)
+CHANNEL_NAME = "resu-me"
 
 # הגדרת intents, כולל Message Content Intent
 intents = discord.Intents.default()
@@ -27,9 +27,12 @@ async def count_and_report():
     unique_visits = 0
     new_downloads = 0
 
-    # ספירת ההודעות מהערוץ עליו עובד ה-BotUser
-    # נניח שאתם רוצים לקרוא מערוץ בשם 'resu-me'
-    channel = discord.utils.get(bot.get_all_channels(), name="resu-me")
+    # מוצאים את הערוץ לפי שם (case-insensitive)
+    channel = next(
+        (c for c in bot.get_all_channels() if c.name.lower() == CHANNEL_NAME),
+        None
+    )
+
     if channel:
         async for msg in channel.history(after=since):
             txt = msg.content.lower()
@@ -37,16 +40,17 @@ async def count_and_report():
                 new_downloads += 1
             elif 'כניסה ייחודית' in txt:
                 unique_visits += 1
+    else:
+        print(f"Channel '{CHANNEL_NAME}' not found – aborting count.")
 
     # תאריך היום לפי שעון ישראל
     now      = datetime.datetime.now(ZoneInfo("Asia/Jerusalem"))
     date_str = now.strftime("%d.%m.%y")
     content  = f"היום ה{date_str} היו: {unique_visits} כניסות ו{new_downloads} הורדות."
 
-    # שליחת ההודעה דרך ה-Webhook בלי הרשאות נוספות
+    # שליחת ההודעה ישירות ל־WEBHOOK_URL
     async with aiohttp.ClientSession() as session:
-        webhook = Webhook.from_url(WEBHOOK_URL, adapter=AsyncWebhookAdapter(session))
-        await webhook.send(content)
+        await session.post(WEBHOOK_URL, json={"content": content})
 
     await bot.close()
 
