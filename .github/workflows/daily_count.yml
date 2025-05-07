@@ -1,1 +1,28 @@
+name: Daily Discord Count
 
+on:
+  schedule:
+    # כל יום בשעה 20:00 שעון ישראל = 17:00 UTC
+    - cron: '0 17 * * *'
+
+jobs:
+  count:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run daily count
+        run: python main.py
+        env:
+          DISCORD_BOT_TOKEN:   ${{ secrets.DISCORD_BOT_TOKEN }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
