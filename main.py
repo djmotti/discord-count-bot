@@ -9,7 +9,7 @@ from zoneinfo import ZoneInfo
 WEBHOOK_URL = os.environ['DISCORD_WEBHOOK_URL']
 BOT_TOKEN   = os.environ['DISCORD_BOT_TOKEN']
 
-# שם הערוץ שממנו נספור (תשנה לפי השם המדויק שלך)
+# שם הערוץ ממנו נספור (תעדכן לשם התעלה שלך)
 CHANNEL_NAME = "resu-me"
 
 # הגדרת intents, כולל Message Content Intent
@@ -27,7 +27,7 @@ async def count_and_report():
     unique_visits = 0
     new_downloads = 0
 
-    # מוצאים את הערוץ לפי שם (case-insensitive)
+    # מוצאים את הערוץ לפי השם
     channel = next(
         (c for c in bot.get_all_channels() if c.name.lower() == CHANNEL_NAME),
         None
