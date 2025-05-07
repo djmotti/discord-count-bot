@@ -1,8 +1,11 @@
 name: Daily Discord Count
 
 on:
+  push:
+    branches:
+      - main
   schedule:
-    # כל יום בשעה 20:00 שעון ישראל = 17:00 UTC
+    # כל יום ב-17:00 UTC (20:00 ישראל)
     - cron: '0 17 * * *'
 
 jobs:
