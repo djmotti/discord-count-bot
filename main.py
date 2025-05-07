@@ -9,7 +9,7 @@ from zoneinfo import ZoneInfo
 WEBHOOK_URL = os.environ['DISCORD_WEBHOOK_URL']
 BOT_TOKEN   = os.environ['DISCORD_BOT_TOKEN']
 
-# שם הערוץ ממנו נספור (תעדכן לשם התעלה שלך)
+# שם הערוץ שמממנו נספור (עדכן לשם התעלה שלך)
 CHANNEL_NAME = "resu-me"
 
 # הגדרת intents, כולל Message Content Intent
@@ -27,7 +27,7 @@ async def count_and_report():
     unique_visits = 0
     new_downloads = 0
 
-    # מוצאים את הערוץ לפי השם
+    # מוצאים את הערוץ לפי שם
     channel = next(
         (c for c in bot.get_all_channels() if c.name.lower() == CHANNEL_NAME),
         None
@@ -43,12 +43,23 @@ async def count_and_report():
     else:
         print(f"Channel '{CHANNEL_NAME}' not found – aborting count.")
 
-    # תאריך היום לפי שעון ישראל
-    now      = datetime.datetime.now(ZoneInfo("Asia/Jerusalem"))
-    date_str = now.strftime("%d.%m.%y")
-    content  = f"היום ה{date_str} היו: {unique_visits} כניסות ו{new_downloads} הורדות."
+    # תאריך היום ושם היום בשבוע לפי שעון ישראל
+    now       = datetime.datetime.now(ZoneInfo("Asia/Jerusalem"))
+    weekday_map = {
+        1: "שני",
+        2: "שלישי",
+        3: "רביעי",
+        4: "חמישי",
+        5: "שישי",
+        6: "שבת",
+        7: "ראשון"
+    }
+    weekday   = weekday_map[now.isoweekday()]
+    date_str  = now.strftime("%d.%m.%y")
 
-    # שליחת ההודעה ישירות ל־WEBHOOK_URL
+    content = f"היום {weekday} {date_str} היו: {unique_visits} כניסות ו{new_downloads} הורדות."
+
+    # שליחת ההודעה ישירות ל־Webhook URL
     async with aiohttp.ClientSession() as session:
         await session.post(WEBHOOK_URL, json={"content": content})
 
